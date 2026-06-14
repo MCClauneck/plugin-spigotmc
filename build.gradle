@@ -60,9 +60,9 @@ java {
 }
 
 dependencies {
-    implementation "io.github.mcclauneck:api:${project.version}"
-    implementation "io.github.mcclauneck:common:${project.version}"
-    implementation "io.github.mcclauneck:bukkit:${project.version}"
+    implementation "io.github.mcclauneck:api:2026.0.7-2"
+    implementation "io.github.mcclauneck:common:2026.0.7-2"
+    implementation "io.github.mcclauneck:bukkit:2026.0.7-2"
     implementation 'io.github.mcengine:manager:2026.0.6-5'
     implementation 'io.github.mcengine:spigotmc:2026.0.6-5'
 
