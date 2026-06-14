@@ -1,0 +1,47 @@
+enable: false
+
+# Currencies that the plugin guarantees to exist.
+# Each entry is written as "code,Display Name":
+#   - code: the unique, lower-case system code stored in the database.
+#   - Display Name: the human-readable name shown to players.
+# Add, remove, or rename entries freely to define your own custom currencies.
+# Whenever a player joins, any listed currency that is missing is created
+# automatically, so new entries appear without restarting the server.
+currencies:
+  - coin,Coin
+  - copper,Copper
+  - silver,Silver
+  - gold,Gold
+  - point,Point
+  - token,Token
+
+database:
+  # Options: sqlite, postgresql, mysql, mongodb, api
+  type: "sqlite"
+  
+  sqlite:
+    file: "economy.db"
+    
+  postgresql:
+    host: "localhost"
+    port: 5432
+    database: "economy"
+    username: "postgres"
+    password: "password"
+    
+  mysql:
+    host: "localhost"
+    port: 3306
+    database: "economy"
+    username: "root"
+    password: "password"
+    
+  mongodb:
+    uri: "mongodb://localhost:27017"
+    database: "economy"
+
+  # Remote central API backend (MCEngine server-expressjs).
+  # Forwards all economy operations to the server over HTTP.
+  api:
+    url: "http://localhost:3000"
+    token: "your-api-token"

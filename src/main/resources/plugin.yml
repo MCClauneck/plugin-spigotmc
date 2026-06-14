@@ -1,0 +1,16 @@
+name: ${name}
+version: ${version}
+main: io.github.mcclauneck.spigotmc.MCEconomyPlugin
+
+api-version: '1.20'
+author: MCClauneck
+description: A plugin for SpigotMC
+
+commands:
+  mceconomyextension:
+    description: Manage MCEconomy extensions
+    permission: mcextension.admin
+
+libraries:
+  - com.zaxxer:HikariCP:7.0.2
+  - org.mongodb:mongodb-driver-sync:5.7.0
