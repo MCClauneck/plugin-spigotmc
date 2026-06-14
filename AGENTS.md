@@ -6,6 +6,10 @@ All agents (Windsurf, Claude Code, Codex, and others) MUST read and adhere to th
 
 Please refer to `.agents/README.md` for the central index and routing hub of all specialized instructions.
 
+## Platform skill (MANDATORY)
+
+This repository ships a platform skill in [`SKILLS.md`](./SKILLS.md). Before writing or modifying any plugin code here, you MUST read and apply [`SKILLS.md`](./SKILLS.md) — it defines the platform-specific engineering standards (the API ladder, threading model, rules, and intensity levels) for this module.
+
 ## Git: branching and commits (MANDATORY)
 
 Before creating any branch or writing any commit, you MUST read and follow these two files:
