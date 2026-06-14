@@ -1,0 +1,14 @@
+/*
+ * Standalone build for the MCClauneck Plugin SpigotMC platform.
+ *
+ * rootProject.name is intentionally kept as the Maven artifactId ("spigotmc"),
+ * even though the repository is named "plugin-spigotmc", so published coordinates
+ * stay io.github.mcclauneck:spigotmc.
+ */
+
+plugins {
+    // Apply the foojay-resolver plugin to allow automatic download of JDKs
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'spigotmc'

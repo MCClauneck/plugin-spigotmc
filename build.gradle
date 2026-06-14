@@ -1,0 +1,202 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.gradleup.shadow' version '9.4.1'
+}
+
+group = project.property('project-group')
+version = "${project.property('project-version')}-${project.property('project-iteration')}"
+
+repositories {
+    mavenCentral()
+    maven {
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven {
+        url = 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+    maven {
+        // MCEngine extension artifacts (io.github.mcengine:*)
+        name = "MCEngine"
+        url = "https://maven.pkg.github.com/MCEngine/mcextension"
+        credentials {
+            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+        }
+    }
+    maven {
+        // MCClauneck Plugin API artifact (io.github.mcclauneck:api)
+        name = "MCClauneckPluginApi"
+        url = "https://maven.pkg.github.com/MCClauneck/plugin-api"
+        credentials {
+            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+        }
+    }
+    maven {
+        // MCClauneck Plugin Common artifact (io.github.mcclauneck:common)
+        name = "MCClauneckPluginCommon"
+        url = "https://maven.pkg.github.com/MCClauneck/plugin-common"
+        credentials {
+            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+        }
+    }
+    maven {
+        // MCClauneck Plugin Bukkit artifact (io.github.mcclauneck:bukkit)
+        name = "MCClauneckPluginBukkit"
+        url = "https://maven.pkg.github.com/MCClauneck/plugin-bukkit"
+        credentials {
+            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+dependencies {
+    implementation "io.github.mcclauneck:api:${project.version}"
+    implementation "io.github.mcclauneck:common:${project.version}"
+    implementation "io.github.mcclauneck:bukkit:${project.version}"
+    implementation 'io.github.mcengine:manager:2026.0.6-5'
+    implementation 'io.github.mcengine:spigotmc:2026.0.6-5'
+
+    compileOnly 'org.xerial:sqlite-jdbc:3.53.0.0'
+
+    compileOnly 'org.spigotmc:spigot-api:26.1.2-R0.1-SNAPSHOT'
+}
+
+jar {
+    enabled = false
+}
+
+// Disable Gradle Module Metadata generation to ensure Maven
+// clients pull the shadow jar
+tasks.withType(GenerateModuleMetadata).configureEach {
+    enabled = false
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    mergeServiceFiles()
+
+    // Ensure all implementation dependencies are shadowed
+    configurations = [project.configurations.runtimeClasspath]
+
+    relocate "io.github.mcengine", "io.github.mcclauneck"
+}
+
+processResources {
+    def props = [
+        version: project.version,
+        group: project.group,
+        name: 'MCAI'
+    ]
+    inputs.properties props
+    filteringCharset 'UTF-8'
+    filesMatching('plugin.yml') {
+        expand props
+    }
+}
+
+base {
+    archivesName = "MCEconomySpigotMC"
+}
+
+publishing {
+    publications {
+        shadow(MavenPublication) {
+            artifact shadowJar
+
+            pom {
+                name = project.name
+                description = "MCClauneck Plugin SpigotMC"
+                url = "https://mcclauneck.github.io/website"
+                developers {
+                    developer {
+                        id = "jetsadawijit"
+                        name = "jetsadawijit"
+                        url = "https://jetsadawijit.github.io"
+                    }
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/${project.property('git-org-name')}/${project.property('git-repository')}"
+            credentials {
+                username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
+                password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+            }
+        }
+    }
+}
+
+build.dependsOn shadowJar
+
+tasks.register('exportJar') {
+    dependsOn shadowJar
+
+    // Capture values at configuration time to support Configuration Cache
+    def exportPath = System.getenv("SPIGOTMC_PLUGIN_JAR_PATH")
+    def projectName = project.name
+    def shadowJarFile = shadowJar.archiveFile
+    def rootBuildDir = project.layout.buildDirectory.get().asFile
+
+    doLast {
+        // Export to project build directory
+        if (!rootBuildDir.exists()) {
+            rootBuildDir.mkdirs()
+        }
+        def sourceFile = shadowJarFile.get().asFile
+        def rootTargetFile = new File(rootBuildDir, sourceFile.name)
+
+        java.nio.file.Files.copy(
+            sourceFile.toPath(),
+            rootTargetFile.toPath(),
+            java.nio.file.StandardCopyOption.REPLACE_EXISTING
+        )
+        println "Exported ${sourceFile.name} to build directory"
+
+        // Export to local test server path if environment variable is provided
+        if (exportPath != null && !exportPath.isEmpty()) {
+            def destDir = new File(exportPath)
+            if (destDir.exists() && destDir.isDirectory()) {
+                // Delete existing jars starting with projectName
+                destDir.listFiles().each { f ->
+                    if (f.name.startsWith(projectName) && f.name.endsWith(".jar")) {
+                        println "Deleting existing plugin jar: ${f.name}"
+                        f.delete()
+                    }
+                }
+
+                // Copy the new jar using Java NIO for Configuration Cache compatibility
+                def targetFile = new File(destDir, sourceFile.name)
+
+                java.nio.file.Files.copy(
+                    sourceFile.toPath(),
+                    targetFile.toPath(),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING
+                )
+
+                println "Exported ${sourceFile.name} to ${exportPath}"
+            } else {
+                println "Export path does not exist or is not a directory: ${exportPath}"
+            }
+        }
+    }
+}
+
+build.finalizedBy exportJar
+
+tasks.register('clean', Delete) {
+    delete layout.buildDirectory
+}
