@@ -20,8 +20,8 @@ repositories {
         name = "MCEngine"
         url = "https://maven.pkg.github.com/MCEngine/mcextension"
         credentials {
-            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
-            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+            username = System.getenv('GITHUB_ACTOR')
+            password = System.getenv('GITHUB_TOKEN')
         }
     }
     maven {
@@ -29,8 +29,8 @@ repositories {
         name = "MCClauneckPluginApi"
         url = "https://maven.pkg.github.com/MCClauneck/plugin-api"
         credentials {
-            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
-            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+            username = System.getenv('GITHUB_ACTOR')
+            password = System.getenv('GITHUB_TOKEN')
         }
     }
     maven {
@@ -38,8 +38,8 @@ repositories {
         name = "MCClauneckPluginCommon"
         url = "https://maven.pkg.github.com/MCClauneck/plugin-common"
         credentials {
-            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
-            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+            username = System.getenv('GITHUB_ACTOR')
+            password = System.getenv('GITHUB_TOKEN')
         }
     }
     maven {
@@ -47,8 +47,8 @@ repositories {
         name = "MCClauneckPluginBukkit"
         url = "https://maven.pkg.github.com/MCClauneck/plugin-bukkit"
         credentials {
-            username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
-            password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+            username = System.getenv('GITHUB_ACTOR')
+            password = System.getenv('GITHUB_TOKEN')
         }
     }
 }
@@ -133,8 +133,8 @@ publishing {
             name = "GitHubPackages"
             url = "https://maven.pkg.github.com/${project.property('git-org-name')}/${project.property('git-repository')}"
             credentials {
-                username = System.getenv('GITHUB_ACTOR') ?: System.getenv('AGENT_GITHUB_NAME') ?: System.getenv('USER_GITHUB_NAME')
-                password = System.getenv('GITHUB_TOKEN') ?: System.getenv('AGENT_GITHUB_TOKEN') ?: System.getenv('USER_GITHUB_TOKEN')
+                username = System.getenv('GITHUB_ACTOR')
+                password = System.getenv('GITHUB_TOKEN')
             }
         }
     }
